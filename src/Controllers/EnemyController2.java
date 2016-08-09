@@ -3,6 +3,7 @@ package Controllers;
 import Models.Enemy;
 import Models.EnemyBullet;
 import Models.GameConfig;
+import Models.Plane;
 import Views.GameDrawer;
 import Views.ImageDrawer;
 
@@ -11,7 +12,7 @@ import java.awt.*;
 /**
  * Created by Minh on 8/3/2016.
  */
-public class EnemyController2 extends SingleController {
+public class EnemyController2 extends SingleControllerWithHP implements Colliable{
     private EnemyBulletManager enemyBulletManager;
     private int count = 0;
 
@@ -20,6 +21,7 @@ public class EnemyController2 extends SingleController {
         super(gameObject, gameDrawer);
         this.gameVector.dx = SPEED;
         enemyBulletManager = new EnemyBulletManager();
+        CollisionPool.getInst().add(this);
     }
 
     @Override
@@ -40,5 +42,17 @@ public class EnemyController2 extends SingleController {
     public void draw(Graphics g) {
         super.draw(g);
         this.enemyBulletManager.draw(g);
+    }
+
+    @Override
+    public void onCollide(Colliable c) {
+        if (c instanceof PlaneController){
+            Plane plane = (Plane) c.getGameObject();
+            plane.decreaseHP(10);
+            if(((Plane) c.getGameObject()).getHp() <= 0){
+                c.getGameObject().destroy();
+            }
+            gameObject.destroy();
+        }
     }
 }

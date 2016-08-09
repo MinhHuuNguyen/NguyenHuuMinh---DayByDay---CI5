@@ -1,7 +1,8 @@
-import Controllers.EnemyController;
-import Controllers.EnemyManager;
-import Controllers.PlaneController;
+import Controllers.*;
 import Models.GameConfig;
+import Models.GameObject;
+import Models.GameObjectWithHP;
+import Models.Plane;
 import Utils.Utils;
 
 import java.awt.*;
@@ -114,9 +115,12 @@ public class GameWindow extends Frame implements Runnable{
     @Override
 
     public void update(Graphics g){
+
         bufferedImageGraphics.drawImage(background,0,0,null);
         PlaneController.getPlaneController1().draw(bufferedImageGraphics);
         EnemyManager.getInst().draw(bufferedImageGraphics);
+        BombManager.getInst().draw(bufferedImageGraphics);
+//        bufferedImageGraphics.drawString("HP: " + PlaneController.planeController1.gameObjectWithHP().getHp(), 300, 400);
         g.drawImage(bufferedImage,0,0,null);
     }
     public void run(){
@@ -125,6 +129,8 @@ public class GameWindow extends Frame implements Runnable{
                 Thread.sleep(gameConfig.getThreadDelay());
                 PlaneController.getPlaneController1().run();
                 EnemyManager.getInst().run();
+                CollisionPool.getInst().run();
+                BombManager.getInst().run();
                 repaint();
             } catch (InterruptedException e) {
                 e.printStackTrace();

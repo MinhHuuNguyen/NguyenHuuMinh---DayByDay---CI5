@@ -1,5 +1,7 @@
 package Models;
 
+import java.awt.*;
+
 /**
  * Created by Minh on 8/2/2016.
  */
@@ -44,6 +46,10 @@ public class GameObject {
 
     public boolean isAlive() {
         return isAlive;
+    }
+
+    public Rectangle getRect(){
+        return new Rectangle(x, y, width, height);
     }
 
     public void move (GameVector gameVector){

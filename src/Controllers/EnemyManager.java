@@ -23,7 +23,7 @@ public class EnemyManager extends ControllerManager {
 //        }
 
     }
-    private static EnemyManager inst;
+    public static EnemyManager inst;
     public static EnemyManager getInst(){
         if(inst == null){
             inst = new EnemyManager();
@@ -34,7 +34,7 @@ public class EnemyManager extends ControllerManager {
     public void run() {
         super.run();
         Random rand = new Random();
-        count = rand.nextInt(150) + 1;
+        count = rand.nextInt(50) + 1;
         if (count == 1){
             int  x = rand.nextInt(GameConfig.getInst().getScreenWidth()) + 1;
             Enemy enemyPlane = new Enemy (x, 0);

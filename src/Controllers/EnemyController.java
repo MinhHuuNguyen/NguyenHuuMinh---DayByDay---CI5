@@ -3,6 +3,7 @@ package Controllers;
 import Models.Enemy;
 import Models.EnemyBullet;
 import Models.GameConfig;
+import Models.Plane;
 import Views.GameDrawer;
 import Views.ImageDrawer;
 
@@ -11,7 +12,7 @@ import java.awt.*;
 /**
  * Created by Minh on 8/2/2016.
  */
-public class EnemyController extends SingleController {
+public class EnemyController extends SingleControllerWithHP implements Colliable{
     private EnemyBulletManager enemyBulletManager;
     private int count = 0;
 
@@ -20,6 +21,7 @@ public class EnemyController extends SingleController {
         super(gameObject, gameDrawer);
         this.gameVector.dy = SPEED;
         enemyBulletManager = new EnemyBulletManager();
+        CollisionPool.getInst().add(this);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class EnemyController extends SingleController {
         super.run();
         this.enemyBulletManager.run();
         count++;
-        if (GameConfig.getInst().durationInSeconds(count) >= 0.1){
+        if (GameConfig.getInst().durationInSeconds(count) >= 1){
             count = 0;
             EnemyBullet enemyBullet = new EnemyBullet(gameObject.getX() + gameObject.getWidth() / 2 - EnemyBullet.WIDTH / 2, gameObject.getY() +gameObject.getHeight(), EnemyBullet.WIDTH, EnemyBullet.HEIGHT);
             ImageDrawer imageDrawer= new ImageDrawer("resources/enemy_bullet.png");
@@ -40,5 +42,18 @@ public class EnemyController extends SingleController {
     public void draw(Graphics g) {
         super.draw(g);
         this.enemyBulletManager.draw(g);
+    }
+
+    @Override
+    public void onCollide(Colliable c) {
+        if (c instanceof PlaneController){
+            Plane plane = (Plane) c.getGameObject();
+            plane.decreaseHP(10);
+            if(((Plane) c.getGameObject()).getHp() <= 0){
+                c.getGameObject().destroy();
+            }
+            gameObject.destroy();
+        }
+
     }
 }
