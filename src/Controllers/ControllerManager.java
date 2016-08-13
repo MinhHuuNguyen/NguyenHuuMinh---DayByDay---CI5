@@ -1,5 +1,7 @@
 package Controllers;
 
+import Controllers.Enemy.SingleController;
+
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Vector;
@@ -8,7 +10,7 @@ import java.util.Vector;
  * Created by Minh on 8/2/2016.
  */
 public class ControllerManager implements BaseController{
-    protected Vector<SingleController> singleControllerVector;
+    public Vector<SingleController> singleControllerVector;
 
     public ControllerManager() {
         singleControllerVector = new Vector<SingleController>();

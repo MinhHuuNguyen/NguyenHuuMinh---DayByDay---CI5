@@ -1,5 +1,6 @@
 package Controllers;
 
+import Controllers.Enemy.SingleController;
 import Models.GameObject;
 import Models.GameObjectWithHP;
 import Views.GameDrawer;

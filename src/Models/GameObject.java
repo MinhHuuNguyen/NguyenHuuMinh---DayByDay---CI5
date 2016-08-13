@@ -28,8 +28,11 @@ public class GameObject {
     public int getHeight() {
         return height;
     }
-    public int middleX(){
+    public int getMiddleX(){
         return this.x + this.width / 2;
+    }
+    public int getBottom(){
+        return this.y + this.height;
     }
     public void moveTo(int x, int y){
         this.x = x;
