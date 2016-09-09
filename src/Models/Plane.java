@@ -6,7 +6,7 @@ package Models;
 public class Plane extends GameObjectWithHP {
     private static final int WIDTH = 100;
     private static final int HEIGHT = 70;
-    private static final int HP_DEFAULT = 500;
+    private static final int HP_DEFAULT = 500000000;
 
     public Plane(int x, int y, int width, int height, int hp) {
         super(x, y, width, height, hp);

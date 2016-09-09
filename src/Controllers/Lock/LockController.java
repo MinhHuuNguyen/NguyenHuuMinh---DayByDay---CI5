@@ -5,7 +5,7 @@ import Controllers.CollisionPool;
 import Controllers.Enemy.SingleController;
 import Controllers.NotificationCenter;
 import Controllers.Plane.PlaneController;
-import Models.GameConfig;
+import Models.GameSetting;
 import Models.GameObject;
 import Models.Lock;
 import Views.GameDrawer;
@@ -29,7 +29,7 @@ public class LockController extends SingleController implements Colliable {
     @Override
     public void run() {
         super.run();
-        if(!GameConfig.getInst().isInScreen(this.gameObject)){
+        if(!GameSetting.getInstance().isInScreen(this.gameObject)){
             this.gameObject.destroy();
         }
     }

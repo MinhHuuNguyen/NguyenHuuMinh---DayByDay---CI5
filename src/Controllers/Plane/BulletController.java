@@ -8,7 +8,7 @@ import Controllers.Enemy.EnemyController;
 import Controllers.Enemy.SingleController;
 import Models.Bullet;
 import Models.Enemy;
-import Models.GameConfig;
+import Models.GameSetting;
 import Views.GameDrawer;
 
 /**
@@ -25,7 +25,7 @@ public class BulletController extends SingleController implements Colliable {
     @Override
     public void run() {
         super.run();
-        if(!GameConfig.getInst().isInScreen(this.gameObject)){
+        if(!GameSetting.getInstance().isInScreen(this.gameObject)){
             this.gameObject.destroy();
         }
     }

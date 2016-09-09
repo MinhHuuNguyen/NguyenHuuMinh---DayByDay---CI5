@@ -2,8 +2,10 @@ package Controllers.Enemy;
 
 import Controllers.Colliable;
 import Controllers.CollisionPool;
+import Controllers.GameScenes.*;
 import Controllers.Plane.PlaneController;
 import Models.EnemyBullet;
+import Models.GameObjectWithHP;
 import Models.Plane;
 import Views.GameDrawer;
 
@@ -12,6 +14,7 @@ import Views.GameDrawer;
  */
 public class EnemyBulletController extends SingleController implements Colliable {
     public static final int SPEED = 10;
+    GameSceneListener gameSceneListener;
     public EnemyBulletController(EnemyBullet gameObject, GameDrawer gameDrawer) {
         super(gameObject, gameDrawer);
 //        this.gameVector.dy = SPEED;
@@ -21,12 +24,8 @@ public class EnemyBulletController extends SingleController implements Colliable
     @Override
     public void onCollide(Colliable c) {
         if (c instanceof PlaneController){
-            Plane plane = (Plane) c.getGameObject();
-            plane.decreaseHP(1);
-            if(((Plane) c.getGameObject()).getHp() <= 0){
-                c.getGameObject().destroy();
-            }
-            gameObject.destroy();
+            PlaneController.instance.decreaseHP(10);
+            this.gameObject.destroy();
         }
     }
 }

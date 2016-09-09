@@ -1,11 +1,7 @@
-import Controllers.*;
-import Controllers.Bomb.BombManager;
-import Controllers.Enemy.EnemyBulletManager;
-import Controllers.Enemy.EnemyManager;
-import Controllers.Lock.LockManager;
-import Controllers.Plane.PlaneController;
-import Models.GameConfig;
-import Utils.Utils;
+import Controllers.GameScenes.GameScene;
+import Controllers.GameScenes.GameSceneListener;
+import Controllers.GameScenes.MenuGameScene;
+import Models.GameSetting;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -14,22 +10,27 @@ import java.awt.image.BufferedImage;
 /**
  * Created by Minh on 7/27/2016.
  */
-public class GameWindow extends Frame implements Runnable{
-    Image background;
-//    PlaneController planeController1;
+public class GameWindow extends Frame implements Runnable, GameSceneListener{
+
     BufferedImage bufferedImage;
     Graphics bufferedImageGraphics;
     Thread thread;
-    GameConfig gameConfig;
-
+    GameSetting gameSetting;
+    GameScene currentGameScene;
 
     public GameWindow(){
+        configUI();
+        changeGameScene(new MenuGameScene());
+        this.bufferedImage = new BufferedImage(gameSetting.getScreenWidth(),gameSetting.getScreenHeight(),BufferedImage.TYPE_3BYTE_BGR);
+        this.bufferedImageGraphics = bufferedImage.getGraphics();
+        thread = new Thread(this);
+        thread.start();
+    }
+    private void configUI(){
+        gameSetting = GameSetting.getInstance();
         this.setVisible(true);
-        this.gameConfig = GameConfig.getInst();
-        this.setSize(gameConfig.getScreenWidth(), gameConfig.getScreenHeight());
+        this.setSize(gameSetting.getScreenWidth(), gameSetting.getScreenHeight());
         this.setLocation(0, 0);
-
-
         this.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -64,83 +65,29 @@ public class GameWindow extends Frame implements Runnable{
 
             }
         });
-            background = Utils.loadImage("resources/background.png");
-
-        this.addKeyListener(PlaneController.getPlaneController1());
-//        this.addMouseMotionListener(new MouseMotionListener() {
-//            @Override
-//            public void mouseDragged(MouseEvent e) {
-//                plane2.moveTo(e.getX() - (planeWidth / 2), e.getY() - (planeHeight / 2));
-//                Bullet bullet = new Bullet();
-//                bullet.moveTo(plane2.x + (planeWidth / 2) - 5, plane2.y);
-//                bulletVector.add(bullet);
-//            }
-//
-//            @Override
-//            public void mouseMoved(MouseEvent e) {
-//                plane2.moveTo(e.getX() - (planeWidth / 2), e.getY() - (planeHeight / 2));
-//            }
-//        });
-//        this.addMouseListener(new MouseListener() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void mousePressed(MouseEvent e) {
-//                Bullet bullet = new Bullet();
-//                bullet.moveTo(plane2.x + (planeWidth / 2) - 5, plane2.y);
-//                bulletVector.add(bullet);
-//            }
-//
-//            @Override
-//            public void mouseReleased(MouseEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void mouseEntered(MouseEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void mouseExited(MouseEvent e) {
-//
-//            }
-//        });
-        this.bufferedImage = new BufferedImage(600,800,BufferedImage.TYPE_3BYTE_BGR);
-        this.bufferedImageGraphics = bufferedImage.getGraphics();
-        thread = new Thread(this);
-        thread.start();
     }
     @Override
-
     public void update(Graphics g){
-
-        bufferedImageGraphics.drawImage(background,0,0,null);
-        PlaneController.getPlaneController1().draw(bufferedImageGraphics);
-        EnemyManager.getInst().draw(bufferedImageGraphics);
-        EnemyBulletManager.enemyBulletManager.draw(bufferedImageGraphics);
-        BombManager.getInst().draw(bufferedImageGraphics);
-        LockManager.getInst().draw(bufferedImageGraphics);
-       //bufferedImageGraphics.drawString("HP: " + PlaneController.planeController1.gameObjectWithHP().getHp(), 300, 400);
+        this.currentGameScene.draw(bufferedImageGraphics);
+        //bufferedImageGraphics.drawString("HP: " + PlaneController.planeController.gameObjectWithHP().getHp(), 300, 400);
         g.drawImage(bufferedImage,0,0,null);
     }
     public void run(){
         while(true) {
             try {
-                Thread.sleep(gameConfig.getThreadDelay());
-                PlaneController.getPlaneController1().run();
-                EnemyManager.getInst().run();
-                EnemyBulletManager.enemyBulletManager.run();
-                CollisionPool.getInst().run();
-                BombManager.getInst().run();
-                LockManager.getInst().run();
+                this.currentGameScene.run();
+                Thread.sleep(gameSetting.getThreadDelay());
                 repaint();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void changeGameScene(GameScene gameScene) {
+        currentGameScene = gameScene;
+        currentGameScene.setGameSceneListener(this);
+        this.addKeyListener(gameScene.getKeyListener());
     }
 }

@@ -21,7 +21,7 @@ public class BombController extends SingleController implements Colliable {
     @Override
     public void run() {
         super.run();
-        if(!GameConfig.getInst().isInScreen(this.gameObject)){
+        if(!GameSetting.getInstance().isInScreen(this.gameObject)){
             this.gameObject.destroy();
         }
     }

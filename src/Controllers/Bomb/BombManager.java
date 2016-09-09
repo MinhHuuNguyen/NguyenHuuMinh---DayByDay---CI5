@@ -1,7 +1,7 @@
 package Controllers.Bomb;
 
 import Controllers.ControllerManager;
-import Models.GameConfig;
+import Models.GameSetting;
 
 import java.util.Random;
 
@@ -26,7 +26,7 @@ public class BombManager extends ControllerManager {
         super.run();
         Random rand = new Random();
         count = rand.nextInt(400) + 1;
-        int  x = rand.nextInt(GameConfig.getInst().getScreenWidth()) + 1;
+        int  x = rand.nextInt(GameSetting.getInstance().getScreenWidth()) + 1;
         if (count == 1){
             BombController bombController = BombController.create(x, 0,  BombType.SMALL);
             this.add(bombController);

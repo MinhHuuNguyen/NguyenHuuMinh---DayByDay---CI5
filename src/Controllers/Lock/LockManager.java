@@ -1,7 +1,7 @@
 package Controllers.Lock;
 
 import Controllers.ControllerManager;
-import Models.GameConfig;
+import Models.GameSetting;
 
 import java.util.Random;
 
@@ -9,7 +9,8 @@ import java.util.Random;
  * Created by Minh on 8/12/2016.
  */
 public class LockManager extends ControllerManager{
-    private int count;
+    private int count = 0;
+    private static final int LOCK_PERIOD = 200;
     private LockManager(){
         super();
     }
@@ -22,11 +23,12 @@ public class LockManager extends ControllerManager{
     }
     @Override
     public void run() {
+        count++;
         super.run();
         Random rand = new Random();
-        count = rand.nextInt(200) + 1;
-        int  x = rand.nextInt(GameConfig.getInst().getScreenWidth()) + 1;
-        if (count == 1){
+        if (count == LOCK_PERIOD){
+            count = 0;
+            int  x = rand.nextInt(GameSetting.getInstance().getScreenWidth()) + 1;
             LockController lockController = LockController.create(x, 0);
             this.add(lockController);
         }

@@ -2,6 +2,7 @@ package Controllers;
 
 import Controllers.Bomb.BigBombSubscriber;
 import Controllers.Bomb.SmallBombSubscriber;
+import Controllers.Gift.GiftSubscriber;
 import Controllers.Lock.LockSubscriber;
 
 import java.util.Iterator;
@@ -14,12 +15,13 @@ public class NotificationCenter {
      private Vector<BigBombSubscriber> bigBombSubscribers;
      private Vector<SmallBombSubscriber> smallBombSubscribers;
      private Vector<LockSubscriber> lockSubscribers;
+    private Vector<GiftSubscriber> giftSubscribers;
 
      public NotificationCenter(){
          bigBombSubscribers = new Vector<BigBombSubscriber>();
          smallBombSubscribers = new Vector<SmallBombSubscriber>();
          lockSubscribers = new Vector<LockSubscriber>();
-
+         giftSubscribers = new Vector<GiftSubscriber>();
      }
      public void subscribeBigBomb(BigBombSubscriber bigBombSubscriber){
          bigBombSubscribers.add(bigBombSubscriber);
@@ -29,6 +31,9 @@ public class NotificationCenter {
      }
      public void subscribeLock (LockSubscriber lockSubscriber){
          lockSubscribers.add(lockSubscriber);
+     }
+     public void subcribeFireBall(GiftSubscriber giftSubscriber){
+        giftSubscribers.add(giftSubscriber);
      }
      public void onBigBombExplode(int x, int y){
          Iterator<BigBombSubscriber> bigBombSubscriberIterator = bigBombSubscribers.iterator();
@@ -60,6 +65,17 @@ public class NotificationCenter {
                 lockSubscriberIterator.remove();
             } else {
                 lockSubscriber.onFreeze(x, y);
+            }
+        }
+    }
+    public void onFireBall(int x, int y){
+        Iterator<GiftSubscriber> giftSubscriberIterator = giftSubscribers.iterator();
+        while (giftSubscriberIterator.hasNext()){
+            GiftSubscriber giftSubscriber = giftSubscriberIterator.next();
+            if (!giftSubscriber.getGamObject().isAlive()){
+                giftSubscriberIterator.remove();
+            } else {
+                giftSubscriber.onFireBall(x, y);
             }
         }
     }

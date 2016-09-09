@@ -4,7 +4,10 @@ import Controllers.*;
 import Controllers.Bomb.BigBombSubscriber;
 import Controllers.Bomb.BombManager;
 import Controllers.Bomb.SmallBombSubscriber;
+import Controllers.GameScenes.GameOverGameScene;
+import Controllers.GameScenes.GameSceneListener;
 import Controllers.Lock.LockSubscriber;
+import Controllers.Plane.FireBallController;
 import Controllers.Plane.PlaneController;
 import Models.*;
 import Views.GameDrawer;
@@ -24,7 +27,8 @@ public class EnemyController extends SingleControllerWithHP implements Colliable
     private static final int SPEED = 3;
     private static final int BULLET_SPEED = 12;
     private static final int BOMB_RADIUS = 300;
-    private static final int ATTACK_SPEED = 10;
+    private static final int FREEZED_PERIOD = 300;
+    private int lockCount;
 
     private EnemyState enemyState;
     private static EnemyBulletType enemyBulletType;
@@ -45,8 +49,35 @@ public class EnemyController extends SingleControllerWithHP implements Colliable
         switch (enemyState){
             case NORMAL:
                 super.run();
+                if (!GameSetting.getInstance().isInScreen(gameObject)){
+                    gameObject.destroy();
+                }
+                if (GameSetting.getInstance().toSeconds(count) > 1.0) {
+                    count = 0;
+                    EnemyBulletController enemyBulletController = new EnemyBulletController(new EnemyBullet(this.gameObject.getMiddleX() - EnemyBullet.WIDTH / 2, this.gameObject.getBottom()),
+                            new ImageDrawer("resources/enemy_bullet.png"));
+                    switch (enemyBulletType){
+                        case STRAIGHT:
+                            enemyBulletController.gameVector.dy = BULLET_SPEED;
+                            break;
+                        case FOLLOWED:
+                            int dx = (PlaneController.instance.getGameObject().getX() + PlaneController.instance.getGameObject().getWidth() / 2) - (gameObject.getX() + gameObject.getWidth() / 2);
+                            int dy = (PlaneController.instance.getGameObject().getY() + PlaneController.instance.getGameObject().getHeight() / 2) - (gameObject.getY() + gameObject.getHeight());
+                            if (dy > 0){
+                                double ratio = Math.sqrt(dx * dx + dy * dy) / BULLET_SPEED;
+                                enemyBulletController.gameVector.dy = (int)(dy / ratio);
+                                enemyBulletController.gameVector.dx = (int)(dx / ratio);
+                            }
+                            break;
+                    }
+                    EnemyBulletManager.enemyBulletManager.add(enemyBulletController);
+                }
                 break;
             case FREEZED:
+                lockCount++;
+                if (lockCount == FREEZED_PERIOD){
+                    enemyState = EnemyState.NORMAL;
+                }
                 break;
         }
 //        if (this.enemyMovement == EnemyMovement.ZIKZAK){
@@ -54,25 +85,7 @@ public class EnemyController extends SingleControllerWithHP implements Colliable
 //                this.gameVector.dx = -this.gameVector.dx;
 //            }
 //        }
-        if (count == ATTACK_SPEED) {
-            EnemyBulletController enemyBulletController = new EnemyBulletController(new EnemyBullet(this.gameObject.getMiddleX() - EnemyBullet.WIDTH / 2, this.gameObject.getBottom()),
-                                                                                    new ImageDrawer("resources/enemy_bullet.png"));
-            switch (enemyBulletType){
-                case STRAIGHT:
-                    enemyBulletController.gameVector.dy = BULLET_SPEED;
-                    break;
-                case FOLLOWED:
-                    int dx = (PlaneController.planeController.getGameObject().getX() + PlaneController.planeController.getGameObject().getWidth() / 2) - (gameObject.getX() + gameObject.getWidth() / 2);
-                    int dy = (PlaneController.planeController.getGameObject().getY() + PlaneController.planeController.getGameObject().getHeight() / 2) - (gameObject.getY() + gameObject.getHeight());
-                    if (dy > 0){
-                        double ratio = Math.sqrt(dx * dx + dy * dy) / BULLET_SPEED;
-                        enemyBulletController.gameVector.dy = (int)(dy / ratio);
-                        enemyBulletController.gameVector.dx = (int)(dx / ratio);
-                    }
-                    break;
-            }
-            EnemyBulletManager.enemyBulletManager.add(enemyBulletController);
-        }
+
     }
 
     @Override
@@ -83,11 +96,10 @@ public class EnemyController extends SingleControllerWithHP implements Colliable
     @Override
     public void onCollide(Colliable c) {
         if (c instanceof PlaneController){
-            Plane plane = (Plane) c.getGameObject();
-            plane.decreaseHP(10);
-            if(((Plane) c.getGameObject()).getHp() <= 0){
-                c.getGameObject().destroy();
-            }
+            PlaneController.instance.decreaseHP(20);
+            gameObject.destroy();
+        }
+        if (c instanceof FireBallController){
             gameObject.destroy();
         }
 
@@ -141,6 +153,7 @@ public class EnemyController extends SingleControllerWithHP implements Colliable
     @Override
     public void onFreeze(int x, int y) {
         enemyState = EnemyState.FREEZED;
+        lockCount = 0;
     }
 
     @Override

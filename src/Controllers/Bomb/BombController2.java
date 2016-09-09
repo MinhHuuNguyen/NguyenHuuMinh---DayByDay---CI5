@@ -4,7 +4,7 @@ import Controllers.*;
 import Controllers.Enemy.SingleController;
 import Controllers.Plane.PlaneController;
 import Models.Bomb;
-import Models.GameConfig;
+import Models.GameSetting;
 import Models.GameObject;
 import Views.GameDrawer;
 import Views.ImageDrawer;
@@ -23,7 +23,7 @@ public class BombController2 extends SingleController implements Colliable {
     @Override
     public void run() {
         super.run();
-        if(!GameConfig.getInst().isInScreen(this.gameObject)){
+        if(!GameSetting.getInstance().isInScreen(this.gameObject)){
             this.gameObject.destroy();
         }
     }

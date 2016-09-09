@@ -1,7 +1,7 @@
 package Controllers.Enemy;
 
 import Controllers.ControllerManager;
-import Models.GameConfig;
+import Models.GameSetting;
 
 import java.util.Random;
 
@@ -27,12 +27,12 @@ public class EnemyManager extends ControllerManager {
         Random rand = new Random();
         count = rand.nextInt(50) + 1;
         if (count == 1){
-            int  x = rand.nextInt(GameConfig.getInst().getScreenWidth()) + 1;
+            int  x = rand.nextInt(GameSetting.getInstance().getScreenWidth()) + 1;
             EnemyController enemyController = EnemyController.create(x, 0, EnemyType.WHITE, EnemyMovement.CROSS, EnemyShot.STRAIGHT);
             this.add(enemyController);
         }
         if (count == 2){
-            int  x = rand.nextInt(GameConfig.getInst().getScreenWidth()) + 1;
+            int  x = rand.nextInt(GameSetting.getInstance().getScreenWidth()) + 1;
             EnemyController enemyController = EnemyController.create(x, 0, EnemyType.YELLOW, EnemyMovement.STRAIGHT, EnemyShot.FOLLOWED);
             this.add(enemyController);
         }
